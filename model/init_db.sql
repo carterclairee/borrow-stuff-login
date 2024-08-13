@@ -2,7 +2,7 @@
 -- Drop Tables
 --
 
--- SET foreign_key_checks = ;
+SET foreign_key_checks = 1;
 DROP TABLE if exists Items;
 DROP TABLE if exists People;
 
@@ -25,7 +25,6 @@ CREATE TABLE `People`(
     `floor` INT NOT NULL,
     `email` VARCHAR(255) NOT NULL
 );
-ALTER TABLE
-    `Items` ADD CONSTRAINT `items_belongs_to_foreign` FOREIGN KEY(`belongs_to`) REFERENCES `People`(`id`);
-ALTER TABLE
-    `Items` ADD CONSTRAINT `items_borrowed_by_foreign` FOREIGN KEY(`borrowed_by`) REFERENCES `People`(`id`);
+
+-- ALTER TABLE `Items` ADD CONSTRAINT `items_belongs_to_foreign` FOREIGN KEY(`belongs_to`) REFERENCES `People`(`id`);
+-- ALTER TABLE `Items` ADD CONSTRAINT `items_borrowed_by_foreign` FOREIGN KEY(`borrowed_by`) REFERENCES `People`(`id`);
