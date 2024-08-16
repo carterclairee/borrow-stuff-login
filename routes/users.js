@@ -2,15 +2,19 @@ var express = require('express');
 var router = express.Router();
 const db = require("../model/helper");
 
-
+//helper
+async function getAllPeople(){
+  const result = await db ("SELECT * FROM People ORDER BY id ASC;");
+  return result.data;
+}
 
 // get all people 
 
 router.get("/", async (req, res) => {
   try {
     console.log("Received request to fetch people");
-    const results = await db("SELECT * FROM People ORDER BY id ASC;");
-    res.send(results.data); // Send only the data part
+    const people = await getAllPeople();
+    res.send(people);
   } catch (error) {
     console.error("Error fetching people:", error); // Log errors to the console
     res.status(500).send({ error: error.message });
@@ -48,11 +52,8 @@ router.post("/", async (req, res) => {
     await db(
       `INSERT INTO People (first_name, last_name, floor, email) VALUES ('${first_name}', '${last_name}', '${floor}', '${email}');`
     );
-    const result = await db(
-      `SELECT * FROM People WHERE id = LAST_INSERT_ID();`
-    );
-    
-    res.status(201).send(result);
+    const people = await getAllPeople();
+    res.status(201).send(people);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
@@ -63,8 +64,9 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const results = await db(`DELETE FROM People WHERE id = ${id};`);
-    res.send({ message: "deleted" });
+    await db(`DELETE FROM People WHERE id = ${id};`);
+    const people = await getAllPeople();
+    res.send(people);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
