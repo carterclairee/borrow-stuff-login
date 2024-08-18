@@ -1,5 +1,5 @@
 import React from "react";
 
 export default function Ineed(){
-    return <div>Ineed</div>
+    return <div>I need</div>
 }

@@ -46,6 +46,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //post
+//INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('camera', true, 1, NULL);
 
 router.post("/", async (req, res) => {
   console.log("REQ.BODY", req.body);
@@ -53,8 +54,9 @@ router.post("/", async (req, res) => {
 
   try {
     await db(
-      `INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('${item}', '${free}', '${belongs_to}', '${borrowed_by}');`
+      `INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('${item}', true, '${belongs_to}', NULL );`
     );
+    
     const items = await getAllItems();
     res.status(201).send(items);
   } catch (error) {
@@ -63,6 +65,7 @@ router.post("/", async (req, res) => {
 });
 
 //patch
+
 
 
 

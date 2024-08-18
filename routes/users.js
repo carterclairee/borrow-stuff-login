@@ -8,6 +8,12 @@ async function getAllPeople(){
   return result.data;
 }
 
+// Escape function 
+//function escape(value) {
+  //return mysql.escape(value);
+//}
+
+
 // get all people 
 
 router.get("/", async (req, res) => {
@@ -43,7 +49,7 @@ router.get("/:id", async (req, res) => {
 //post comes here
 
 //INSERT INTO People (first_name, last_name, floor, email) VALUES ("Betty", "Boop", 3, "email");
-
+/*
 router.post("/", async (req, res) => {
   console.log("REQ.BODY", req.body);
   const { first_name, last_name, floor, email } = req.body;
@@ -58,6 +64,54 @@ router.post("/", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
+
+*/
+
+
+
+// POST to search for a person by email
+router.post("/search", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const query = `SELECT * FROM People WHERE email = '${email}'`;
+    const results = await db(query);
+
+    if (results.data.length > 0) {
+      res.status(200).json(results.data[0]);
+    } else {
+      res.status(404).send({ error: "Person not found" });
+    }
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+// POST to add a new person
+router.post("/", async (req, res) => {
+  const { first_name, last_name, floor } = req.body;
+
+  try {
+    const email = `${first_name}.${last_name}`.toLowerCase() + "@mvp.com";
+    
+    const insertQuery = `
+      INSERT INTO People (first_name, last_name, floor, email)
+      VALUES ('${first_name}', '${last_name}', ${floor}, '${email}');
+    `;
+    
+    const result = await db(insertQuery);
+
+    // Retrieve the newly inserted person
+    const idQuery = `SELECT * FROM People WHERE id = LAST_INSERT_ID()`;
+    const newPerson = await db(idQuery);
+
+    res.status(201).json(newPerson.data[0]);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+
 
 //delete via ID
 

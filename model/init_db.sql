@@ -20,6 +20,7 @@ CREATE TABLE `People`(
     `email` VARCHAR(255) NOT NULL UNIQUE 
 );
 
+INSERT INTO People (first_name, last_name, floor, email) VALUES ("Betty", "Boop", 1, "betty.boop@mvp.com");
 
 
 CREATE TABLE `Items`(
@@ -30,6 +31,7 @@ CREATE TABLE `Items`(
     `borrowed_by` INT NULL
 );
 
+INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('camera', true, 1, NULL);
 
 -- ALTER TABLE `Items` ADD CONSTRAINT `items_belongs_to_foreign` FOREIGN KEY(`belongs_to`) REFERENCES `People`(`id`);
 -- ALTER TABLE `Items` ADD CONSTRAINT `items_borrowed_by_foreign` FOREIGN KEY(`borrowed_by`) REFERENCES `People`(`id`);
