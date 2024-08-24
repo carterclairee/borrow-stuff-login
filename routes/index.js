@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const db = require("../model/helper");
+const mysql = require("mysql");
 
 /* GET home page. 
 //router.get('/', function(req, res, next) {
@@ -44,6 +45,29 @@ router.get("/:id", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
+
+//get by search
+
+router.get("/search/:item", async (req, res) => {
+  console.log("REQ.PARAMS", req.params);
+  const {item } = req.params;
+  try{
+      const query = `SELECT * FROM Items WHERE item = '${item}'`;
+      const results = await db(mysql.format(query, [item]));
+          
+if (results.data.length === 0 ){
+  return res.status(404).send({message: "Item not found"});
+}
+
+res.send(results.data);
+} catch (error){
+  res.status(500).send({error:error.message});
+}
+});
+
+
+
+
 
 //post
 //INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('camera', true, 1, NULL);
