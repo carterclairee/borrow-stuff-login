@@ -2,6 +2,7 @@
 import React, {useState}from "react";
 
 
+
 function Ihave() {
 
 const [firstName, setFirstName] = useState ("");
@@ -73,6 +74,12 @@ try {
 
       if (itemResponse.status === 201){
         alert ("Thank you for adding")
+
+        setFirstName("");
+        setLastName("");
+        setFloor("");
+        setItem("");
+
 
       }else{
         throw new Error ("failed to add");
