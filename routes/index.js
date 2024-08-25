@@ -46,24 +46,47 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//get by search
+//get by search count
 
 router.get("/search/:item", async (req, res) => {
   console.log("REQ.PARAMS", req.params);
   const {item } = req.params;
   try{
-      const query = `SELECT * FROM Items WHERE item = '${item}'`;
+      const query = `SELECT COUNT (*) as count FROM Items WHERE item = '${item}'`;
       const results = await db(mysql.format(query, [item]));
-          
-if (results.data.length === 0 ){
-  return res.status(404).send({message: "Item not found"});
-}
 
-res.send(results.data);
-} catch (error){
-  res.status(500).send({error:error.message});
-}
+      if (results.data.length === 0 || results.data[0].count === 0) {
+        return res.status(200).send({ count: 0, message: "Item not found" });     
+          }
+
+          res.send({ count: results.data[0].count, message: "Item found" });
+        } catch (error) {
+          res.status(500).send({ error: error.message });
+        }
 });
+
+//get by search details 
+
+router.get("/details/:item", async (req, res) => {
+  const { item } = req.params;
+
+  try {
+    const query = `SELECT * FROM Items WHERE item = '${item}'`;
+    const results = await db(mysql.format(query, [item]));
+
+    if (results.data.length === 0) {
+      return res.status(404).send({ message: "Item not found" });
+    }
+
+    res.send(results.data[0]);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+
+
+
 
 
 

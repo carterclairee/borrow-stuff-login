@@ -32,7 +32,7 @@ module.exports = async function db(query) {
           con.end();
           return;
         }
-
+/*
         if (!result.length) {
           if (result.affectedRows === 0) {
             results.error = "Action not complete";
@@ -53,6 +53,16 @@ module.exports = async function db(query) {
           // such as when the query ends with SELECT LAST_INSERT_ID() and returns an insertId)
           results.data.push(result[0]);
         }
+*/
+
+if (result.length > 0) {
+  if (result[0].constructor.name === "RowDataPacket" || "count" in result[0]) {
+    results.data = result;
+  }
+}
+
+
+
 
         con.end();
         resolve(results);

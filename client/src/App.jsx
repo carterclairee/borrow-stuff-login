@@ -3,6 +3,7 @@ import Home from './components/Home';
 import Ihave from './components/Ihave';
 import Ineed from './components/Ineed';
 import SearchResults from "./components/SearchResults";
+import ItemDetails from "./components/ItemDetails";
 import { Routes, Route, Link } from 'react-router-dom';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
       <Route path = "/Ihave" element = {<Ihave />} />
       <Route path = "/Ineed" element = {<Ineed />} />
       <Route path= "/search/:item" element={<SearchResults />} />
+      <Route path="/details/:item" element={<ItemDetails />} /> 
       </Routes>
       
     </>
