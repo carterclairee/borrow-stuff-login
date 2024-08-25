@@ -21,7 +21,7 @@ function App() {
       <Route path = "/" element = {<Home />} />
       <Route path = "/Ihave" element = {<Ihave />} />
       <Route path = "/Ineed" element = {<Ineed />} />
-      <Route path="/search/:item" element={<SearchResults />} />
+      <Route path= "/search/:item" element={<SearchResults />} />
       </Routes>
       
     </>
