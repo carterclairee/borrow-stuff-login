@@ -7,14 +7,14 @@ export default function Ineed(){
     const [itemCount, setItemCount] = useState(null); 
     const [itemName, setItemName] = useState("");
     const [message, setMessage] = useState("");
-    //const navigate =useNavigate();
+    const navigate =useNavigate();
 
     const handleSubmit = async(e) => {
         e.preventDefault();
-        //navigate(`/search/${searchTerm}`);
+       // navigate(`/search/${searchTerm}`);
 
         try {
-            const response = await fetch(`api/index/search/${searchTerm}`); //not sure about this !!
+            const response = await fetch(`api/index/search/${searchTerm}`);
             const data = await response.json();
 
         
@@ -60,10 +60,10 @@ export default function Ineed(){
 
         {itemCount !== null && (
         <p onClick={handleItemClick} style={{ cursor: 'pointer', color: 'blue' }}>
-          Currently {itemCount} {itemName}(s) in the house
+          Currently {itemCount} {searchTerm}(s) in the house
         </p>
       )}
-      {message && <p>{message}</p>}
+      
         </div>
     );
 }

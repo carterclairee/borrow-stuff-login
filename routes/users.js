@@ -27,7 +27,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get by id 
+// get by id   add all the info from Items
 
 router.get("/:id", async (req, res) => {
   console.log("REQ.PARAMS", req.params);

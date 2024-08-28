@@ -9,9 +9,18 @@ const mysql = require("mysql");
 //});
 */
 
-//helper
+
+//"SELECT * FROM Items ORDER BY id ASC;"
+
+    // SELECT * FROM Items LEFT JOIN People ON Items.belongs_to = People.id;
+
+
+
+
+
+//helper join to get owner info as well 
 async function getAllItems(){
-  const result = await db ("SELECT * FROM Items ORDER BY id ASC;");
+  const result = await db ("SELECT Items.id, Items.item, Items.free, Items.borrowed_by, People.id, People.first_name, People.last_name, People.floor, People.email FROM Items  LEFT JOIN People ON Items.belongs_to = People.id;");
   return result.data;
 }
 
@@ -48,6 +57,8 @@ router.get("/:id", async (req, res) => {
 
 //get by search count
 
+//
+
 router.get("/search/:item", async (req, res) => {
   console.log("REQ.PARAMS", req.params);
   const {item } = req.params;
@@ -67,18 +78,22 @@ router.get("/search/:item", async (req, res) => {
 
 //get by search details 
 
+//SELECT * FROM Items LEFT JOIN People ON Items.belongs_to = People.id;
+
+//SELECT Items.id, Items.item, Items.free, Items.borrowed_by, People.id, People.first_name, People.last_name, People.floor, People.email  FROM Items  LEFT JOIN People ON Items.belongs_to = People.id WHERE item = "camera";
+
 router.get("/details/:item", async (req, res) => {
   const { item } = req.params;
 
   try {
-    const query = `SELECT * FROM Items WHERE item = '${item}'`;
+    const query = `SELECT Items.id, Items.item, Items.free, Items.borrowed_by, People.id, People.first_name, People.last_name, People.floor, People.email  FROM Items  LEFT JOIN People ON Items.belongs_to = People.id WHERE item = '${item}'`;
     const results = await db(mysql.format(query, [item]));
 
     if (results.data.length === 0) {
       return res.status(404).send({ message: "Item not found" });
     }
 
-    res.send(results.data[0]);
+    res.send(results.data);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }

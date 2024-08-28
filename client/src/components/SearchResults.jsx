@@ -8,7 +8,7 @@ export default function SearchResults() {
 
 
     useEffect(() => {
-        fetch('http://localhost:4000/search/${item}')
+        fetch('api/index/search/${item}')
         .then((response) => response.json())
         .then((data) => setSearchResults(data))
         .catch((error) => console.error("Error fetching search results", error));
