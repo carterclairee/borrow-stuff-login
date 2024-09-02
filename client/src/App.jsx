@@ -4,6 +4,8 @@ import Ihave from './components/Ihave';
 import Ineed from './components/Ineed';
 import SearchResults from "./components/SearchResults";
 import ItemDetails from "./components/ItemDetails";
+import BorrowStatus from "./components/BorrowStatus";
+import UserItemForm from "./components/UserItemForm";
 import { Routes, Route, Link } from 'react-router-dom';
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
       <Route path = "/Ineed" element = {<Ineed />} />
       <Route path= "/search/:item" element={<SearchResults />} />
       <Route path="/details/:item" element={<ItemDetails />} /> 
+      <Route path="/borrow/:id" element={<BorrowStatus />} />
+      <Route path="./UserItemForm" element={<UserItemForm />} />
       </Routes>
       
     </>

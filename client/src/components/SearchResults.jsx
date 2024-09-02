@@ -8,7 +8,7 @@ export default function SearchResults() {
 
 
     useEffect(() => {
-        fetch('api/index/search/${item}')
+        fetch('api/index/borrowableItems/${item}')
         .then((response) => response.json())
         .then((data) => setSearchResults(data))
         .catch((error) => console.error("Error fetching search results", error));
@@ -20,17 +20,39 @@ export default function SearchResults() {
 
     return (
 
-        <div>
+      <div>
         <h2>Search Results for "{item}"</h2>
         {searchResults.message ? (
           <p>{searchResults.message}</p>
         ) : (
           <div>
-            <p>Item Found: {searchResults.item}</p>
-            
+            <p>{searchResults.length} Items Found</p>
+            {searchResults.length > 0 ? (
+              <p>Found Stuff!</p>
+            ) : (
+              <p>Nothing found</p>
+            )}
           </div>
         )}
       </div>
+
     );
   }
         
+
+  /*
+           {searchResults.length > 0 ? (
+            searchResults.map((detail, index) => (
+              <div key={index}>
+                <p>Name: {detail.first_name} {detail.last_name}</p>
+                <p>Email: {detail.email}</p>
+                <p>Floor: {detail.floor}</p>
+                <p> {detail.itemCount} {item}(s)</p>
+                <button onClick={() => handleBorrowRequest(detail)}>Can I borrow ?</button>
+                
+              </div>
+            ))
+          ) : (
+            <p>No one has this item in the house.</p>
+          )}
+       */ 
