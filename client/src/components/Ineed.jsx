@@ -9,8 +9,9 @@ export default function Ineed(){
 //    const [itemName, setItemName] = useState("");
 //    const [message, setMessage] = useState("");
     const [result, setResult] = useState([]);
-    const [selectedItemId, setSelectedItemId] = useState(null);
+    //const [selectedItemId, setSelectedItemId] = useState(null);
     const navigate =useNavigate();
+   
 
     const handleSubmit = async(e) => {
         e.preventDefault();
@@ -49,7 +50,7 @@ export default function Ineed(){
     };
 
 
-    const handleItemSelection = async (userInfo) => {
+   /* const handleItemSelection = async (userInfo) => {
       if (selectedItemId) {
         try {
           const response = await fetch(`/api/index/${selectedItemId}`, {
@@ -75,7 +76,46 @@ export default function Ineed(){
           alert("Failed to borrow the item.");
         }
       }
+    }; */
+
+
+    const handleBorrowItem = async (itemId, userEmail) => {
+      try {
+        const response = await fetch(`/api/index/${itemId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: userEmail,  // Send the user's email as part of the request body
+          }),
+        });
+    
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to borrow item");
+        }
+    
+        const updatedItem = await response.json(); // Get the updated item back from the response
+        console.log("Item successfully borrowed:", updatedItem);
+        alert(`You have successfully borrowed the item: ${updatedItem.item}`);
+      } catch (error) {
+        console.error("Error borrowing item:", error);
+        alert(`Error: ${error.message}`);
+      }
     };
+    
+
+    const [email, setEmail] = useState("");
+    const [selectedItemId, setSelectedItemId] = useState(null);
+
+    const handleEmailSubmit = (event) => {
+      event.preventDefault();
+      if (selectedItemId && email) {
+        handleBorrowItem(selectedItemId, email);
+      }
+    };
+    
 
     return (
     <div>
@@ -113,15 +153,33 @@ export default function Ineed(){
           {selectedItemId && (
         <>
           <h3>Borrow this item:</h3>
-          <UserItemForm
+
+          <form onSubmit={handleEmailSubmit}>
+          <label>
+            Enter your email:
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </label>
+          <button type="submit">Submit</button>
+        </form>
+      </>
+          )}
+
+         {/*<UserItemForm
             onSubmit={(userInfo) => handleItemSelection((userInfo))}
           />
         </>
-      )}
+      )} */} 
       
       </div>
     );
 }
+
+
 /*
 mysql> SELECT Items.* , People.id AS PeopleId, PeopleBorrow.id AS PeopleBorrowId, People.first_name AS first_name_borrow, PeopleBorrow.first_name AS first_name from Items 
 LEFT JOIN People ON Items.belongs_to = People.id LEFT JOIN People AS PeopleBorrow ON Items.borrowed_by = PeopleBorrow.id; 

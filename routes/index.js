@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const db = require("../model/helper");
 const mysql = require("mysql");
-app.use(express.json());
+//app.use(express.json());
 
 /* GET home page. 
 //router.get('/', function(req, res, next) {
@@ -170,29 +170,42 @@ router.put("/:id", async (req, res) => {
 //put borrowed_by 
 
 router.put("/:id", async (req, res) => {
+  console.log("REQ.PARAMS", req.params);
+  console.log("REQ.BODY", req.body)
   const { id } = req.params; 
-  const { personId } = req.body;  // Extract the user ID from the request body
+  const { email } = req.body;  // Extract the user ID from the request body
 
-  if (!personId) {
-    return res.status(400).send({ error: "User ID is required" });
+  if (!email) {
+    return res.status(400).send({ error: "Email is required" });
   }
 
 
   try {
+
+    const personResult = await db(`SELECT * FROM People WHERE email = '${email}';`);
+   
+    const personId = personResult.data[0].id
+    //console.log(personId)
+   
+    if (!personId) {
+      return res.status(404).send({ error: "Person not found" });
+    }
     // Update the item to set it as borrowed by the user and mark it as not free
-    await db(`UPDATE Items SET free = false, borrowed_by = '${personId}', WHERE id = '${id}';`);
+    await db(`UPDATE Items SET free = false, borrowed_by = '${personId}' WHERE id = '${id}';`);
     
-    // Fetch the updated item to confirm the change and send it back in the response
-    const [item] = await db(`SELECT * FROM Items WHERE id = '${id}';`);
     
-    res.send(item); // Send the updated item back to the client
+    const itemResult = await db(`SELECT * FROM Items WHERE id = '${id}';`);
+    const updatedItem = itemResult.data[0];
+
+
+    res.send(updatedItem); // Send the updated item back to the client
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 });
 
 
-
+//'SELECT * from People WHERE email ='${email}'`;
 
 
 // how the eff do I do this ? 
