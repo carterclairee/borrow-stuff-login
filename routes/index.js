@@ -38,6 +38,20 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/borrowedItems", async (req, res) => {
+
+  try {
+    const query = `SELECT * FROM Items WHERE free = false`;
+    console.log("Running query:", query); 
+
+    const borrowedItems = await db(query);
+    res.send(borrowedItems);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+
 // get by id 
 
 router.get("/:id", async (req, res) => {
@@ -128,6 +142,25 @@ router.get("/borrowableItems/:item", async (req, res) => {
 
 //SELECT People.id, People.first_name, People.last_name, People.email, People.floor, COUNT(Items.id) as itemCount FROM Items LEFT JOIN People ON Items.belongs_to = People.id WHERE item = '${item}' GROUP BY People.id;
 
+/*
+
+// borrowed items
+router.get("/borrowedItems", async (req, res) => {
+
+  try {
+    const query = `SELECT * FROM Items WHERE free = false`;
+    console.log("Running query:", query); 
+
+    const borrowedItems = await db(query);
+    res.send(borrowedItems);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+*/
+
+
 
 
 
@@ -151,13 +184,13 @@ router.post("/", async (req, res) => {
   }
 });
 
-//put toggle availability
-/*
-router.put("/:id", async (req, res) => {
+//put return
+
+router.put("/return/:id", async (req, res) => {
   const { id } = req.params; 
   console.log("REQ.PARAMS", req.params);
   try{
-    await db (`UPDATE Items SET free = !free  WHERE id = ${id};`);
+    await db (`UPDATE Items SET free = !free, borrowed_by = NULL WHERE id = ${id};`);
     const items = await getAllItems();
     res.send(items)
   }
@@ -165,7 +198,7 @@ router.put("/:id", async (req, res) => {
   res.status(500).send({ error: error.message });
 }
 });
-*/
+
 
 //put borrowed_by 
 
@@ -223,5 +256,8 @@ router.delete("/:id", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
+
+
+
 
 module.exports = router;

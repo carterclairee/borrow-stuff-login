@@ -114,7 +114,7 @@ router.post("/", async (req, res) => {
 
 
 //delete via ID
-
+/*
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -125,5 +125,31 @@ router.delete("/:id", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
+*/
+
+// I'm moving out 
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    
+    await db('BEGIN;');
+    await db(`UPDATE Items SET free = true, borrowed_by = NULL WHERE borrowed_by = '${id}'`);
+    await db(`DELETE FROM Items WHERE belongs_to = '${id}'`);
+    await db(`DELETE FROM People WHERE id = '${id}'`);
+    await db('COMMIT;');
+     res.status(204).send(); 
+  } catch (error) {
+    await db('ROLLBACK;'); 
+    console.error("Error deleting user:", error);
+    res.status(500).send({ error: "Failed to delete user and update items" });
+  }
+});
+
+
+
+
+
 
 module.exports = router;
