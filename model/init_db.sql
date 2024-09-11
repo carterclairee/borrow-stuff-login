@@ -4,7 +4,7 @@
 
 SET foreign_key_checks = 1;
 DROP TABLE if exists Items;
-DROP TABLE if exists People; -- does this makes sense ? 
+DROP TABLE if exists People; 
 
 --
 -- Create Tables

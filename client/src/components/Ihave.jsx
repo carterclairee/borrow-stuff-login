@@ -10,6 +10,10 @@ const [lastName, setLastName] = useState("");
 const [floor, setFloor] = useState("");
 const [item, setItem] = useState("");
 
+
+  
+const [errorMessage, setErrorMessage] = useState(null);
+
 const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -48,6 +52,9 @@ try {
         personId = existingPerson.id;
       } else if (personResponse.status === 404) {
 
+        setErrorMessage("This email does not exist in our records.");
+        return;
+
         const newPersonResponse = await fetch ("/api/users",
              {
                 method: "POST",
@@ -59,7 +66,10 @@ try {
 
         const newPerson = await newPersonResponse.json();
         personId = newPerson.id;
+        
       }
+
+      
 
       itemData.belongs_to = personId;
 
@@ -80,6 +90,10 @@ try {
         setFloor("");
         setItem("");
 
+        
+        
+        setErrorMessage(null);
+
 
       }else{
         throw new Error ("failed to add");
@@ -93,7 +107,9 @@ try {
 return (
 
     <form onSubmit={handleSubmit}>
-        <h2>Person</h2>
+
+
+      <h2>Person</h2>
         <label>
         First Name:
         <input
@@ -123,9 +139,9 @@ return (
               </select>
               </label>
 
-              <br />
+              <br /> 
 
-<h2>Item</h2>
+        <h3>Add an item</h3>
 <label>
 Item:
 <input
@@ -136,8 +152,9 @@ required
 />
 </label>
 <br/>
+<div style={{ marginTop: "10px" }}>
 <button type= "submit">Submit</button>
-
+</div>
 </form>
 );
 

@@ -136,7 +136,7 @@ export default function Ineed(){
             Currently {itemCount} {result.length} {searchTerm}(s) in the house: */ }
             {result.map((item, index)=>(
               <div key={index}>
-                {item.item} {item.id}{" Belongs to "}{item.first_name_belong} {item.last_name_belong} 
+                {item.item} {" with ID "} {item.id}{" Belongs to "}{item.first_name_belong} {item.last_name_belong} 
                 <p>{item.free ? (
               <button
                 onClick={() => {
