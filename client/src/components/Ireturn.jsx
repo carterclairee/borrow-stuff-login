@@ -38,11 +38,12 @@ const handleReturnItem = async (itemId) => {
     if (response.ok) {
 
 
-      
+      const filterdItems = borrowedItems.filter((item) => item.id !== itemId);
 
-      setBorrowedItems((prevItems) =>
-        prevItems.filter((item) => item.id !== itemId));
-      
+      setBorrowedItems(filterdItems) 
+      console.log(filterdItems) 
+      console.log("Item.iD",  item.id)
+      console.log("ItemID",  itemId)
 
      const updatedItems = await response.json();
      console.log("Updated Items:", updatedItems); 
