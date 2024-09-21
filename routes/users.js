@@ -1,6 +1,16 @@
 var express = require('express');
 var router = express.Router();
 const db = require("../model/helper");
+// jwt for authorization and authentication
+var jwt = require("jsonwebtoken");
+// guard for login
+var userShouldBeLoggedIn = require("../guards/userShouldBeLoggedIn");
+require("dotenv").config();
+// bcrypt for hashing passwords
+var bcrypt = require("bcrypt");
+const saltRounds = 10;
+
+const supersecret = process.env.SUPER_SECRET;
 
 //helper
 async function getAllPeople(){
@@ -55,27 +65,35 @@ router.post("/search", async (req, res) => {
 });
 
 // POST to add a new person
-router.post("/", async (req, res) => {
-  const { first_name, last_name, floor } = req.body;
+// Claire's note: this will be the register section. Will use the email as the username. For now, need to reigster via Postman
+router.post("/register", async (req, res) => {
+  const { first_name, last_name, floor, password } = req.body;
 
   try {
     const email = `${first_name}.${last_name}`.toLowerCase() + "@mvp.com";
+
+    // Variable to hash password
+    const hash = await bcrypt.hash(password, saltRounds);
     
-    const insertQuery = `
-      INSERT INTO People (first_name, last_name, floor, email)
-      VALUES ('${first_name}', '${last_name}', ${floor}, '${email}');
-    `;
+    const insertQuery =
+      `INSERT INTO People (first_name, last_name, floor, email, password)
+      VALUES ('${first_name}', '${last_name}', ${floor}, '${email}', '${hash}');`
     
-    const result = await db(insertQuery);
+    await db(insertQuery);
 
     // Retrieve the newly inserted person
-    // Claire's note: LAST_INSERT_ID() is mysql function that returns the id of the most recently inserted row in the current session
-    const idQuery = `SELECT * FROM People WHERE id = LAST_INSERT_ID()`;
-    const newPerson = await db(idQuery);
+    // Claire's note: LAST_INSERT_ID() is mysql function that returns the id of the most recently inserted row in the current session. I can't get this to work; it keeps getting stuck several inserts back. I'm going to change it to something a little less suave in the interest of time.
+    // const idQuery = `SELECT * FROM people WHERE id = LAST_INSERT_ID();`
+    // const newPerson = await db(idQuery);
 
-    res.status(201).json(newPerson.data[0]);
+    // Get the most recently inserted yarn (the highest id since id is auto-incremented)
+    const newPerson = await db(
+    "SELECT * FROM people ORDER BY id DESC;"
+    );
+
+    res.status(201).send(newPerson.data[0]);
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
