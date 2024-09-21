@@ -43,6 +43,7 @@ export default function Ineed(){
 
     };
 
+    // Claire's note: commented out in return below so I will omit from feature extension
     const handleItemClick = () => {
         if (itemCount > 0){
             navigate(`/details/${searchTerm}`);

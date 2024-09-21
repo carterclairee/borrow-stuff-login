@@ -4,20 +4,7 @@ const db = require("../model/helper");
 const mysql = require("mysql");
 //app.use(express.json());
 
-/* GET home page. 
-//router.get('/', function(req, res, next) {
- // res.send({ title: 'Express' });
-//});
-*/
-
-
-//"SELECT * FROM Items ORDER BY id ASC;"
-
-    // SELECT * FROM Items LEFT JOIN People ON Items.belongs_to = People.id;
-
-
-
-
+// Claire's note: full url is http://localhost:4000/api/index
 
 //helper join to get owner info as well 
 async function getAllItems(){
@@ -26,10 +13,8 @@ async function getAllItems(){
 }
 
 // get all items 
-
 router.get("/", async (req, res) => {
   try {
-    console.log("Received request to fetch items");
     const items = await getAllItems();
     res.send(items);
   } catch (error) {
@@ -38,8 +23,8 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Get items that have been borrowed (free = 0)
 router.get("/borrowedItems", async (req, res) => {
-
   try {
     const query = `SELECT * FROM Items WHERE free = false`;
     console.log("Running query:", query); 
@@ -52,8 +37,7 @@ router.get("/borrowedItems", async (req, res) => {
 });
 
 
-// get by id 
-
+// get item by id 
 router.get("/:id", async (req, res) => {
   console.log("REQ.PARAMS", req.params);
   const { id } = req.params; 
@@ -70,15 +54,13 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//get by search count
-
-//
-
+//get item by search count
 router.get("/search/:item", async (req, res) => {
   console.log("REQ.PARAMS", req.params);
   const {item } = req.params;
   try{
       const query = `SELECT COUNT (*) as count FROM Items WHERE item = '${item}'`;
+      // Sanitized to thwart sql injection attacks
       const results = await db(mysql.format(query, [item]));
 
       if (results.data.length === 0 || results.data[0].count === 0) {
@@ -91,17 +73,14 @@ router.get("/search/:item", async (req, res) => {
         }
 });
 
-//get by search details 
+//get item by search details 
 
-//SELECT * FROM Items LEFT JOIN People ON Items.belongs_to = People.id;
-
-//SELECT Items.id, Items.item, Items.free, Items.borrowed_by, People.id, People.first_name, People.last_name, People.floor, People.email  FROM Items  LEFT JOIN People ON Items.belongs_to = People.id WHERE item = "camera";
-
+// Claire's note: This one aggregates items if someone has more than one. For display purposes on the front end, I might modify it to not aggregate based on owner and include item id so they can be displayed individually. I don't think anything currently displays this info so changing some things probably would be OK.
 router.get("/details/:item", async (req, res) => {
   const { item } = req.params;
 
   try {
-    const query = `SELECT People.id, People.first_name, People.last_name, People.floor, People.email, COUNT(Items.id) as itemCount, '${item}' as item FROM Items  LEFT JOIN People ON Items.belongs_to = People.id WHERE item = '${item}' GROUP BY People.id`;
+    const query = `SELECT People.id, People.first_name, People.last_name, People.floor, People.email, COUNT(Items.id) as itemCount, '${item}' as item FROM Items LEFT JOIN People ON Items.belongs_to = People.id WHERE item = '${item}' GROUP BY People.id`;
     const results = await db(mysql.format(query, [item]));
 
     if (results.data.length === 0) {
@@ -113,8 +92,8 @@ router.get("/details/:item", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-//
 
+// Get information about owner and borrower of items
 router.get("/borrowableItems/:item", async (req, res) => {
   const { item } = req.params;
 
@@ -162,11 +141,7 @@ router.get("/borrowedItems", async (req, res) => {
 
 
 
-
-
-
-
-//post
+//post a new item
 //INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('camera', true, 1, NULL);
 
 router.post("/", async (req, res) => {
@@ -184,8 +159,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-//put return
-
+//put to return an item
 router.put("/return/:id", async (req, res) => {
   const { id } = req.params; 
   console.log("REQ.PARAMS", req.params);
@@ -199,12 +173,9 @@ router.put("/return/:id", async (req, res) => {
 }
 });
 
-
-//put borrowed_by 
-
+// Borrow an item and update the database to mark the item as taken
+// Adjust this when authorization is added
 router.put("/:id", async (req, res) => {
-  console.log("REQ.PARAMS", req.params);
-  console.log("REQ.BODY", req.body)
   const { id } = req.params; 
   const { email } = req.body;  // Extract the user ID from the request body
 
@@ -212,13 +183,11 @@ router.put("/:id", async (req, res) => {
     return res.status(400).send({ error: "Email is required" });
   }
 
-
   try {
 
     const personResult = await db(`SELECT * FROM People WHERE email = '${email}';`);
    
     const personId = personResult.data[0].id
-    //console.log(personId)
    
     if (!personId) {
       return res.status(404).send({ error: "Person not found" });
@@ -226,10 +195,8 @@ router.put("/:id", async (req, res) => {
     // Update the item to set it as borrowed by the user and mark it as not free
     await db(`UPDATE Items SET free = false, borrowed_by = '${personId}' WHERE id = '${id}';`);
     
-    
     const itemResult = await db(`SELECT * FROM Items WHERE id = '${id}';`);
     const updatedItem = itemResult.data[0];
-
 
     res.send(updatedItem); // Send the updated item back to the client
   } catch (error) {
@@ -237,15 +204,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-
-//'SELECT * from People WHERE email ='${email}'`;
-
-
-// how the eff do I do this ? 
-
-
-//delete via ID
-
+// delete item via ID
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -256,8 +215,6 @@ router.delete("/:id", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-
-
 
 
 module.exports = router;

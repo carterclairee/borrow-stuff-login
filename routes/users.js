@@ -8,17 +8,9 @@ async function getAllPeople(){
   return result.data;
 }
 
-// Escape function 
-//function escape(value) {
-  //return mysql.escape(value);
-//}
-
-
 // get all people 
-
 router.get("/", async (req, res) => {
   try {
-    console.log("Received request to fetch people");
     const people = await getAllPeople();
     res.send(people);
   } catch (error) {
@@ -27,10 +19,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get by id   add all the info from Items
-
+// get by people id
 router.get("/:id", async (req, res) => {
-  console.log("REQ.PARAMS", req.params);
   const { id } = req.params; 
   try {
     const results = await db(`SELECT * FROM People WHERE id = ${id};`);
@@ -45,31 +35,8 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
-//post comes here
-
-//INSERT INTO People (first_name, last_name, floor, email) VALUES ("Betty", "Boop", 3, "email");
-/*
-router.post("/", async (req, res) => {
-  console.log("REQ.BODY", req.body);
-  const { first_name, last_name, floor, email } = req.body;
-
-  try {
-    await db(
-      `INSERT INTO People (first_name, last_name, floor, email) VALUES ('${first_name}', '${last_name}', '${floor}', '${email}');`
-    );
-    const people = await getAllPeople();
-    res.status(201).send(people);
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-});
-
-*/
-
-
-
 // POST to search for a person by email
+// Claire's note: POST chosen vs GET to protect email info, probably?
 router.post("/search", async (req, res) => {
   const { email } = req.body;
 
@@ -102,6 +69,7 @@ router.post("/", async (req, res) => {
     const result = await db(insertQuery);
 
     // Retrieve the newly inserted person
+    // Claire's note: LAST_INSERT_ID() is mysql function that returns the id of the most recently inserted row in the current session
     const idQuery = `SELECT * FROM People WHERE id = LAST_INSERT_ID()`;
     const newPerson = await db(idQuery);
 
@@ -110,7 +78,6 @@ router.post("/", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-
 
 
 //delete via ID
@@ -128,28 +95,28 @@ router.delete("/:id", async (req, res) => {
 */
 
 // I'm moving out 
-
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    
+    // BEGIN: Ensures that all database operations within the transaction are either completed or rolled back if any part fails
     await db('BEGIN;');
+    // Person returns borrowed items on moving out
     await db(`UPDATE Items SET free = true, borrowed_by = NULL WHERE borrowed_by = '${id}'`);
+    // Delete person's items
     await db(`DELETE FROM Items WHERE belongs_to = '${id}'`);
+    // Finally, delete person
     await db(`DELETE FROM People WHERE id = '${id}'`);
+    // COMMIT: permanently save transaction only if all are completed
     await db('COMMIT;');
      res.status(204).send(); 
   } catch (error) {
+    // ROLLBACK: if there's an error, none of the changes will be applied
     await db('ROLLBACK;'); 
     console.error("Error deleting user:", error);
     res.status(500).send({ error: "Failed to delete user and update items" });
   }
 });
-
-
-
-
 
 
 module.exports = router;

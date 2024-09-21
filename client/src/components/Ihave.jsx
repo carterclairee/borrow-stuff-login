@@ -54,22 +54,8 @@ try {
 
         setErrorMessage("This email does not exist in our records.");
         return;
-
-        const newPersonResponse = await fetch ("/api/users",
-             {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(personData),
-        });
-
-        const newPerson = await newPersonResponse.json();
-        personId = newPerson.id;
-        
+        // Removed unreachable code similar to that in Home; not needed here        
       }
-
-      
 
       itemData.belongs_to = personId;
 
