@@ -46,7 +46,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // POST to search for a person by email
-// Claire's note: POST chosen vs GET to protect email info, probably?
+// Claire's note: This one will need to be refactored with login
 router.post("/search", async (req, res) => {
   const { email } = req.body;
 
@@ -61,6 +61,41 @@ router.post("/search", async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({ error: error.message });
+  }
+});
+
+// Login
+router.post("/login", async (req, res) => {
+  // Login requirements
+  const { email, password } = req.body;
+
+  try {
+    // Find the user
+    const results = await db(
+      `SELECT * FROM people WHERE email = "${email}";`
+    );
+    const user = results.data[0];
+
+    // If the user exists
+    if (user) {
+      // Grab the user's id for later
+      const user_id = user.id;
+
+      // Compare the entered password with the hashed password stored in database
+      const correctPassword = await bcrypt.compare(password, user.password);
+
+      if (!correctPassword) throw new Error("Incorrect password");
+
+      // If the password is correct, generate a token
+      var token = jwt.sign({ user_id }, supersecret);
+      res.send({ message: "Login successful; here is your token." });
+    }
+    // If the user doesn't exist, send error message
+    else {
+      throw new Error("User does not exist");
+    }
+  } catch (err) {
+    res.status(400).send({ message: err.message });
   }
 });
 
