@@ -97,12 +97,17 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Profile to show personalized data...TO BE ADDED LATER AS VIEW
-router.get("/profile", userShouldBeLoggedIn, (req, res) => {
-  // CREATE DATA TO SEND TO PROFILE
-  res.send({
-    message: "This is the profile of " + req.user_id,
-  });
+// Profile to show personalized data...TO BE ADDED TO LATER AS VIEW
+router.get("/profile", userShouldBeLoggedIn, async (req, res) => {
+  try {
+    const results = await db(
+      `SELECT first_name FROM people WHERE id = ${req.user_id};`
+    );
+    // Sending the first name for now...more data to be added when view is decided on
+    res.send(results.data[0]);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
 });
 
 
