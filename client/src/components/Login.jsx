@@ -25,7 +25,9 @@ function Login() {
     };
 
     // Fetch login with axios
-    const login = async () => {
+    const login = async (e) => {
+        e.preventDefault();
+
         try {
             // Post username and password
             const { data } = await axios("/api/users/login", {
@@ -47,25 +49,9 @@ function Login() {
         localStorage.removeItem("token");
     };
 
-    // MOVE THIS TO HOME PAGE
-    const requestData = async () => {
-        try {
-          const { data } = await axios("/api/users/profile", {
-            headers: {
-              authorization: "Bearer " + localStorage.getItem("token"),
-            },
-          });
-          setMessage(data.message);
-          console.log(data.message);
-        } catch (error) {
-          console.log(error);
-          setMessage(error.message);
-        }
-    };
-
     return (
-        <div>
-        <div>
+        <>
+        <form onSubmit={login}>
           <input
             value={email}
             onChange={handleChange}
@@ -81,26 +67,22 @@ function Login() {
             className="form-control mb-2"
           />
           <div className="d-flex gap-2 justify-content-center">
-            <button className="btn btn-primary" onClick={login}>
+            <button className="btn btn-dark">
               Log in
             </button>
-            <button className="btn btn-outline-dark ml-2" onClick={logout}>
-              Log out
-            </button>
           </div>
-        </div>
-        <div className="text-center p-4">
-          <button className=" btn btn-outline-primary" onClick={requestData}>
-            Request protected data
-          </button>
-        </div>
+        </form>
+
+        <button className="btn btn-outline-dark m-2" onClick={logout}>
+        Log out
+        </button>
   
         {message && (
           <div className="text-center p-4">
             <div className="alert">{message}</div>
           </div>
         )}
-      </div>
+      </>
     );
 }
 
