@@ -19,48 +19,12 @@ async function getAllPeople(){
 }
 
 // get all people 
-router.get("/", async (req, res) => {
+router.get("/", userShouldBeLoggedIn, async (req, res) => {
   try {
     const people = await getAllPeople();
     res.send(people);
   } catch (error) {
-    console.error("Error fetching people:", error); // Log errors to the console
-    res.status(500).send({ error: error.message });
-  }
-});
-
-// get by people id
-// Was causing problems for profile url so I commented out for now
-// router.get("/:id", async (req, res) => {
-//   const { id } = req.params; 
-//   try {
-//     const results = await db(`SELECT * FROM People WHERE id = ${id};`);
-
-//     if (results.data.length === 0) {
-//       return res.status(404).send({ message: " not found" });
-//     }
-
-//     res.send(results.data[0]); // Send only the first result since ID is unique
-//   } catch (error) {
-//     res.status(500).send({ error: error.message });
-//   }
-// });
-
-// POST to search for a person by email
-// Claire's note: This one will need to be refactored with login
-router.post("/search", async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    const query = `SELECT * FROM People WHERE email = '${email}'`;
-    const results = await db(query);
-
-    if (results.data.length > 0) {
-      res.status(200).json(results.data[0]);
-    } else {
-      res.status(404).send({ error: "Person not found" });
-    }
-  } catch (error) {
+    console.error("Error fetching people:", error);
     res.status(500).send({ error: error.message });
   }
 });
@@ -133,7 +97,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Profile to show personalized data
+// Profile to show personalized data...TO BE ADDED LATER AS VIEW
 router.get("/profile", userShouldBeLoggedIn, (req, res) => {
   // CREATE DATA TO SEND TO PROFILE
   res.send({
@@ -141,19 +105,6 @@ router.get("/profile", userShouldBeLoggedIn, (req, res) => {
   });
 });
 
-//delete via ID
-/*
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    await db(`DELETE FROM People WHERE id = ${id};`);
-    const people = await getAllPeople();
-    res.send(people);
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-});
-*/
 
 // I'm moving out 
 router.delete("/:id", async (req, res) => {

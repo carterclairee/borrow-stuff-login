@@ -9,6 +9,9 @@ function Login() {
         password: ""
     });
 
+    // State to check whether user has logged out
+    const [loggedOut, setLoggedOut] = useState(false);
+
     // To navigate to home after successful login
     const navigate = useNavigate();
 
@@ -47,25 +50,49 @@ function Login() {
     // Remove token upon logout
     const logout = () => {
         localStorage.removeItem("token");
+        // Set the logged out state to true to display login message
+        setLoggedOut(true);
     };
 
     return (
         <>
+        {/* Show message if user logs out */}
+        {loggedOut && (
+          <div className="text-center p-4 alert">You've been logged out. Please log in to start borrowing and sharing.</div>
+        )}
+
+        {/* Display login prompt if no token */}
+          {!localStorage.getItem("token") && !loggedOut && (
+          <div className="text-center p-4 alert">Please log in to start borrowing and sharing.</div>
+        )}
+
         <form onSubmit={login}>
+        <div className="form-floating mb-3">
           <input
             value={email}
             onChange={handleChange}
             name="email"
-            type="text"
-            className="form-control mb-2"
+            type="email"
+            className="form-control" 
+            id="floatingInput1" 
+            placeholder="name@example.com"
           />
+          <label for="floatingInput1">Email address</label>
+          </div>
+
+        <div className="form-floating mb-3">
           <input
             value={password}
             onChange={handleChange}
             name="password"
             type="password"
-            className="form-control mb-2"
+            className="form-control" 
+            id="floatingInput2" 
+            placeholder="name@example.com"
           />
+        <label for="floatingInput1">Password</label>
+        </div>
+
           <div className="d-flex gap-2 justify-content-center">
             <button className="btn btn-dark">
               Log in
@@ -73,7 +100,7 @@ function Login() {
           </div>
         </form>
 
-        <button className="btn btn-outline-dark m-2" onClick={logout}>
+        <button className="btn btn-outline-dark mt-4" onClick={logout}>
         Log out
         </button>
   

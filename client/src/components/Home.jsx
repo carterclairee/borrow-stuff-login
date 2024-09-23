@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Home(){
 
@@ -13,24 +14,21 @@ export default function Home(){
     useEffect(() => {
          const fetchUsers = async () => {
           try {
-            const response = await fetch("api/users"); 
-            if (!response.ok) {
-              throw new Error("Failed to fetch users");
-            }
-            const data = await response.json();
+            const { data } = await axios("/api/users", {
+              headers: {
+                authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            });
+
             setUsers(data);  
           } catch (error) {
             setError(error.message); 
           }
         };
-    
+        
         fetchUsers();
       }, []);  
     
-      
-      //if (error) {
-        //return <div>Error: {error}</div>;
-     // }
     
      //moveout 
       const handleDeleteUser = async (userId) => {
@@ -54,7 +52,7 @@ export default function Home(){
         }
       };
 
-      //move in
+      //move in handled on Postman for now
     
       const handleSubmit = async (event) => {
         event.preventDefault();
@@ -166,38 +164,6 @@ export default function Home(){
         <br />
         <button type="submit">I'm moving in</button>
       </form>
-
-
-
-
-
-
-
-
         </div>
       );
     }
-
-
-
-
-
-
-       {/* {itemCount !== null && (
-          <p onClick={handleItemClick} style={{ cursor: 'pointer', color: 'blue' }}>
-            Currently {itemCount} {result.length} {searchTerm}(s) in the house: 
-            {result.map((item, index)=>(
-                <div key={index}>
-                  {item.item} {item.id}{" Belongs to "}{item.first_name_belong}{item.first_name_belong} 
-                  <p>{item.free ? "Available" : "Already borrowed by " }{item.borrowed_by_first_name} {item.borrowed_by_last_name}
-                  </p> 
-                </div>
-              ))}
-            </p>
-          )}
-        
-        </div>
-      );
-  }
-}
-  */ }
