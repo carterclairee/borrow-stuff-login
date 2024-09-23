@@ -30,20 +30,21 @@ router.get("/", async (req, res) => {
 });
 
 // get by people id
-router.get("/:id", async (req, res) => {
-  const { id } = req.params; 
-  try {
-    const results = await db(`SELECT * FROM People WHERE id = ${id};`);
+// Was causing problems for profile url so I commented out for now
+// router.get("/:id", async (req, res) => {
+//   const { id } = req.params; 
+//   try {
+//     const results = await db(`SELECT * FROM People WHERE id = ${id};`);
 
-    if (results.data.length === 0) {
-      return res.status(404).send({ message: " not found" });
-    }
+//     if (results.data.length === 0) {
+//       return res.status(404).send({ message: " not found" });
+//     }
 
-    res.send(results.data[0]); // Send only the first result since ID is unique
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-});
+//     res.send(results.data[0]); // Send only the first result since ID is unique
+//   } catch (error) {
+//     res.status(500).send({ error: error.message });
+//   }
+// });
 
 // POST to search for a person by email
 // Claire's note: This one will need to be refactored with login
@@ -86,9 +87,9 @@ router.post("/login", async (req, res) => {
 
       if (!correctPassword) throw new Error("Incorrect password");
 
-      // If the password is correct, generate a token
+      // If the password is correct, send a token
       var token = jwt.sign({ user_id }, supersecret);
-      res.send({ message: "Login successful; here is your token." });
+      res.send({ message: "Login successful; here is your token.", token });
     }
     // If the user doesn't exist, send error message
     else {
@@ -121,7 +122,7 @@ router.post("/register", async (req, res) => {
     // const idQuery = `SELECT * FROM people WHERE id = LAST_INSERT_ID();`
     // const newPerson = await db(idQuery);
 
-    // Get the most recently inserted yarn (the highest id since id is auto-incremented)
+    // Get the most recently inserted person (the highest id since id is auto-incremented)
     const newPerson = await db(
     "SELECT * FROM people ORDER BY id DESC;"
     );
@@ -132,6 +133,13 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Profile to show personalized data
+router.get("/profile", userShouldBeLoggedIn, (req, res) => {
+  // CREATE DATA TO SEND TO PROFILE
+  res.send({
+    message: "This is the profile of " + req.user_id,
+  });
+});
 
 //delete via ID
 /*
