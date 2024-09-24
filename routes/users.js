@@ -97,36 +97,34 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Profile to show personalized data...TO BE ADDED TO LATER AS VIEW
+// Profile to show personalized data
 router.get("/profile", userShouldBeLoggedIn, async (req, res) => {
   try {
     const results = await db(
       `SELECT first_name FROM people WHERE id = ${req.user_id};`
     );
-    // Sending the first name for now...more data to be added when view is decided on
+    // Sending the first name for now...more data to be added
     res.send(results.data[0]);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 });
 
-
 // I'm moving out 
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
+router.delete("/", userShouldBeLoggedIn, async (req, res) => {
 
   try {
     // BEGIN: Ensures that all database operations within the transaction are either completed or rolled back if any part fails
     await db('BEGIN;');
     // Person returns borrowed items on moving out
-    await db(`UPDATE Items SET free = true, borrowed_by = NULL WHERE borrowed_by = '${id}'`);
+    await db(`UPDATE Items SET free = true, borrowed_by = NULL WHERE borrowed_by = '${req.user_id}'`);
     // Delete person's items
-    await db(`DELETE FROM Items WHERE belongs_to = '${id}'`);
+    await db(`DELETE FROM Items WHERE belongs_to = '${req.user_id}'`);
     // Finally, delete person
-    await db(`DELETE FROM People WHERE id = '${id}'`);
+    await db(`DELETE FROM People WHERE id = '${req.user_id}'`);
     // COMMIT: permanently save transaction only if all are completed
     await db('COMMIT;');
-     res.status(204).send(); 
+     res.status(204).send({message: "User deleted"}); 
   } catch (error) {
     // ROLLBACK: if there's an error, none of the changes will be applied
     await db('ROLLBACK;'); 

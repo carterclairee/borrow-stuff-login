@@ -77,7 +77,7 @@ function Login() {
             id="floatingInput1" 
             placeholder="name@example.com"
           />
-          <label for="floatingInput1">Email address</label>
+          <label htmlFor="floatingInput1">Email address</label>
           </div>
 
         <div className="form-floating mb-3">
