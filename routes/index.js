@@ -137,7 +137,6 @@ router.get("/borrowedItems", async (req, res) => {
 
 //post a new item
 //INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('camera', true, 1, NULL);
-
 // Only posts for logged in user
 router.post("/", userShouldBeLoggedIn, async (req, res) => {
   const { item } = req.body;
