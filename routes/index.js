@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 const db = require("../model/helper");
 const mysql = require("mysql");
+// For protecting endpoints
+var userShouldBeLoggedIn = require("../guards/userShouldBeLoggedIn");
 //app.use(express.json());
 
 // Claire's note: full url is http://localhost:4000/api/index
@@ -75,7 +77,7 @@ router.get("/search/:item", async (req, res) => {
 
 //get item by search details 
 
-// Claire's note: This one aggregates items if someone has more than one. For display purposes on the front end, I might modify it to not aggregate based on owner and include item id so they can be displayed individually. I don't think anything currently displays this info so changing some things probably would be OK.
+// Claire's note: This one aggregates items if someone has more than one.
 router.get("/details/:item", async (req, res) => {
   const { item } = req.params;
 
@@ -111,16 +113,11 @@ router.get("/borrowableItems/:item", async (req, res) => {
   }
 });
 
-
 //`SELECT Items.* , People.id AS PeopleId, PeopleBorrow.id AS PeopleBorrowId, People.first_name AS first_name_belong, People.last_name AS last_name_belong, PeopleBorrow.first_name AS first_name, PeopleBorrow.last_name AS last_name from Items LEFT JOIN People ON Items.belongs_to = People.id LEFT JOIN People AS PeopleBorrow ON Items.borrowed_by = PeopleBorrow.id WHERE Items.item = '${item}'`;
-
 
 //`SELECT Items.id, item, free, belongs_to, borrowed_by, People.id AS peopleId, People.first_name, People.last_name, People.floor, People.email FROM Items LEFT JOIN People ON Items.belongs_to = People.id WHERE Items.item = '${item}'`
 
-
-
 //SELECT People.id, People.first_name, People.last_name, People.email, People.floor, COUNT(Items.id) as itemCount FROM Items LEFT JOIN People ON Items.belongs_to = People.id WHERE item = '${item}' GROUP BY People.id;
-
 /*
 
 // borrowed items
@@ -136,21 +133,18 @@ router.get("/borrowedItems", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-
 */
-
-
 
 //post a new item
 //INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('camera', true, 1, NULL);
 
-router.post("/", async (req, res) => {
-  console.log("REQ.BODY", req.body);
-  const { item, free, belongs_to, borrowed_by } = req.body;
+// Only posts for logged in user
+router.post("/", userShouldBeLoggedIn, async (req, res) => {
+  const { item } = req.body;
 
   try {
     await db(
-      `INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('${item}', true, '${belongs_to}', NULL );`
+      `INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('${item}', true, '${req.user_id}', NULL );`
     ); 
     const items = await getAllItems();
     res.status(201).send(items);

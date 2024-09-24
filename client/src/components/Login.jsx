@@ -90,7 +90,7 @@ function Login() {
             id="floatingInput2" 
             placeholder="name@example.com"
           />
-        <label for="floatingInput1">Password</label>
+        <label htmlFor="floatingInput1">Password</label>
         </div>
 
           <div className="d-flex gap-2 justify-content-center">

@@ -25,7 +25,7 @@ export default function Home(){
 
           setUsers(data);  
           } catch (error) {
-            setError(error.message); 
+            console.log(error.message); 
           }
         };
 
@@ -39,7 +39,7 @@ export default function Home(){
         });
         setProfileInfo(data);
       } catch (error) {
-        setError(error.message); 
+        console.log(error.message); 
       }
     };
     
@@ -73,23 +73,23 @@ export default function Home(){
 
         {profileInfo && (
           <div>
-          <h3>Hello, {profileInfo.first_name}! We live here! </h3>
+            <h3>Hello, {profileInfo.first_name}! We live here! </h3>
 
-          <div className="m-3">
-            <button onClick={handleDeleteUser}>I'm moving out</button>
-          </div>
-
-          <ul>
-            {users.map((user) => (
-              <li key={user.id}style={{ marginBottom: "20px" }}>
-                 <div>
-        {user.first_name} {user.last_name} <br />
-        <span>Lives on floor: {user.floor}</span> <br />
-        <span>Email: {user.email}</span>
+            <div className="m-3">
+              <button onClick={handleDeleteUser}>I'm moving out</button>
             </div>
-              </li>
-            ))}
-          </ul>
+
+            <ul className="list-group">
+              {users.map((user) => (
+                <li key={user.id} className="list-group-item">
+                  <div>
+                    {user.first_name} {user.last_name} <br />
+                    <span>Lives on floor: {user.floor}</span> <br />
+                    <span>Email: {user.email}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
           )}
         </>
