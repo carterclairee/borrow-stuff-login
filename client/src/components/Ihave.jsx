@@ -55,7 +55,7 @@ return (
     <div className="text-center p-4 alert">Please log in to start borrowing and sharing.</div>
   )}
  
-  <h5>I have something to share</h5>
+  <h2>I have something to share</h2>
 
   <form onSubmit={handleSubmit}>
     <div className="form-floating mb-3">

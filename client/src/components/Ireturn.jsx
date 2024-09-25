@@ -15,11 +15,10 @@ useEffect (() => {
             authorization: "Bearer " + localStorage.getItem("token"),
           }
         });
-        console.log(data);
-        // if (!status.ok) {
-        //     throw new Error("Failed to fetch borrowedItems");
-        //   }
-        
+        if (status === 500) {
+            throw new Error("Failed to fetch borrowedItems");
+          }
+
         setBorrowedItems(data);
     } catch (error){
         console.error ("error fetching borrowed items:", error)
@@ -68,16 +67,15 @@ const handleReturnItem = async (itemId) => {
 return (
 
 <div>
-<h2> Borrowed Items</h2>
+<h2 className = "mb-3"> Your Borrowed Items</h2>
 
-<ul>
+<ul className="list-group">
         {borrowedItems && borrowedItems.data && borrowedItems.data.length > 0 ? (
             borrowedItems.data.map((item) => (
-            <li key={item.id}>
-              {item.item}{" with ID "} {item.id}
-              <div style={{ marginTop: "10px" }}>
-              <button onClick={() => handleReturnItem(item.id)}>Return Item</button>
-              </div>
+            <li className="list-group-item d-flex justify-content-between align-items-center" key={item.id}>
+              {item.first_name}'s {item.item} {" with ID "} {item.id}
+
+              <button type="button" className="btn btn-dark btn-sm ms-5" onClick={() => handleReturnItem(item.id)}>Return Item</button>
             </li>
           ))
         ) : (
