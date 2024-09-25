@@ -26,10 +26,9 @@ router.get("/", async (req, res) => {
 });
 
 // Get items that have been borrowed (free = 0)
-router.get("/borrowedItems", async (req, res) => {
+router.get("/borrowedItems", userShouldBeLoggedIn, async (req, res) => {
   try {
-    const query = `SELECT * FROM Items WHERE free = false`;
-    console.log("Running query:", query); 
+    const query = `SELECT i.*, p.first_name, p.last_name FROM Items AS i LEFT JOIN people AS p ON p.id = i.belongs_to WHERE free = false AND borrowed_by = ${req.user_id};`;
 
     const borrowedItems = await db(query);
     res.send(borrowedItems);
@@ -112,28 +111,6 @@ router.get("/borrowableItems/:item", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-
-//`SELECT Items.* , People.id AS PeopleId, PeopleBorrow.id AS PeopleBorrowId, People.first_name AS first_name_belong, People.last_name AS last_name_belong, PeopleBorrow.first_name AS first_name, PeopleBorrow.last_name AS last_name from Items LEFT JOIN People ON Items.belongs_to = People.id LEFT JOIN People AS PeopleBorrow ON Items.borrowed_by = PeopleBorrow.id WHERE Items.item = '${item}'`;
-
-//`SELECT Items.id, item, free, belongs_to, borrowed_by, People.id AS peopleId, People.first_name, People.last_name, People.floor, People.email FROM Items LEFT JOIN People ON Items.belongs_to = People.id WHERE Items.item = '${item}'`
-
-//SELECT People.id, People.first_name, People.last_name, People.email, People.floor, COUNT(Items.id) as itemCount FROM Items LEFT JOIN People ON Items.belongs_to = People.id WHERE item = '${item}' GROUP BY People.id;
-/*
-
-// borrowed items
-router.get("/borrowedItems", async (req, res) => {
-
-  try {
-    const query = `SELECT * FROM Items WHERE free = false`;
-    console.log("Running query:", query); 
-
-    const borrowedItems = await db(query);
-    res.send(borrowedItems);
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-});
-*/
 
 //post a new item
 //INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('camera', true, 1, NULL);

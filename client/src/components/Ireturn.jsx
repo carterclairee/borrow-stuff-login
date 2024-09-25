@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Ireturn(){
 
@@ -9,14 +10,17 @@ useEffect (() => {
 
  const fetchBorrowedItems = async () => {
     try {
-        const response = await fetch ("/api/index/borrowedItems")
-        if (!response.ok) {
-            throw new Error("Failed to fetch borrowedItems");
+        const { data, status } = await axios("/api/index/borrowedItems", {
+          headers: {
+            authorization: "Bearer " + localStorage.getItem("token"),
           }
-        const data = await response.json();
-        console.log("Fetched Borrowed Items:", data); 
+        });
+        console.log(data);
+        // if (!status.ok) {
+        //     throw new Error("Failed to fetch borrowedItems");
+        //   }
+        
         setBorrowedItems(data);
-
     } catch (error){
         console.error ("error fetching borrowed items:", error)
     }
