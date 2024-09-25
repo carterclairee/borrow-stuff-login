@@ -101,10 +101,9 @@ router.post("/register", async (req, res) => {
 router.get("/profile", userShouldBeLoggedIn, async (req, res) => {
   try {
     const results = await db(
-      `SELECT first_name FROM people WHERE id = ${req.user_id};`
+      `SELECT p.first_name, p.last_name, i.id AS item_id, i.item, i.free, i.borrowed_by FROM people As p LEFT JOIN items AS i ON p.id = i.belongs_to WHERE p.id = ${req.user_id};`
     );
-    // Sending the first name for now...more data to be added
-    res.send(results.data[0]);
+    res.send(results.data);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }

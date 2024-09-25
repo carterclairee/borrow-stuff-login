@@ -1,26 +1,33 @@
-import React, {useState}from "react";
+import React, {useState, useEffect}from "react";
 import axios from "axios";
 
 function Ihave() {
-// State for item
+// State for item input
 const [item, setItem] = useState("");
+// State for profile items
+const [myItems, setMyItems] = useState([]);
+
+useEffect(() => {getMyItems()}, []);
 
 const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       // Post item for logged in user
+      // Status destructured will access response from axios
       const { status } = await axios("/api/index", {
         method: "POST",
         headers: {
           authorization: "Bearer " + localStorage.getItem("token"),
         },
+        // Send the item name
         data: { item: item }
       })
       if (status === 201){
         alert ("Thank you for adding")
         setItem("");
-
+        // Refresh view
+        getMyItems();
       } else {
         throw new Error ("failed to add");
       }
@@ -29,30 +36,63 @@ const handleSubmit = async (event) => {
     }
 };
 
+const getMyItems = async () => {
+  try {
+    const { data } = await axios("/api/users/profile", {
+      headers: {
+        authorization: "Bearer " + localStorage.getItem("token"),
+      }
+    });
+    setMyItems(data);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 return (
 <>
+  {!localStorage.getItem("token") && (
+    <div className="text-center p-4 alert">Please log in to start borrowing and sharing.</div>
+  )}
+ 
+  <h5>I have something to share</h5>
+
   <form onSubmit={handleSubmit}>
-    <label>
-    Item:
-    <input
-    type="text"
-    value= {item}
-    onChange= {(e)=>setItem(e.target.value)}
-    required
-    />
-    </label>
-    <br/>
+    <div className="form-floating mb-3">
+      <input
+        value={item} 
+        type="text" 
+        className="form-control" 
+        id="floatingInput" 
+        onChange= {(e)=>setItem(e.target.value)}
+        placeholder="text"
+        required
+      />
+      <label htmlFor="floatingInput">Enter item</label>
+    </div>
+
     <div style={{ marginTop: "10px" }}>
-    <button type= "submit">Submit</button>
+      <button type= "submit">Submit</button>
     </div>
   </form>
+
+  <h5 className="mt-4">My items</h5>
+  {/* Only show item list if the user has any */}
+  {/* Need the myItems[0] otherwise the page will simply crash if user isn't logged in */}
+  {myItems[0] && myItems[0].item_id === null ? (
+    <p>No items to share for now.</p>
+  ) : (
+    <ul className="list-group">
+    {myItems.map((i) => (
+      <li className="list-group-item" key={i.item_id}>
+        {i.item}
+      </li>
+    ))}
+  </ul>
+  )}
+
 </>
 );
 }
 
 export default Ihave;
-
-
-
-
-
