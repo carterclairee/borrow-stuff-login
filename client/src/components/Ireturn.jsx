@@ -19,7 +19,9 @@ useEffect (() => {
             throw new Error("Failed to fetch borrowedItems");
           }
 
+        // This sets borrowedItems as an array {data: [{item1}, {item2}]} but I'm not sure why since it's just an array in Postman.
         setBorrowedItems(data);
+        
     } catch (error){
         console.error ("error fetching borrowed items:", error)
     }
@@ -31,27 +33,19 @@ useEffect (() => {
 
 const handleReturnItem = async (itemId) => {
   try {
-    const response = await fetch(`/api/index/return/${itemId}`, {
+    const { data, status } = await axios(`/api/index/return/${itemId}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
+        authorization: "Bearer " + localStorage.getItem("token"),
       },
+      // Send the item id
+      data: {id: itemId}
     });
     
-    if (response.ok) {
-
-
-     /* const filterdItems = borrowedItems.filter((item) => item.id !== itemId);
-
-      setBorrowedItems(filterdItems) 
-      console.log(filterdItems) 
-      console.log("Item.iD",  item.id)
-      console.log("ItemID",  itemId)
-*/
-     const updatedItems = await response.json();
-     console.log("Updated Items:", updatedItems); 
-     setBorrowedItems(updatedItems.data);
-
+    if (status === 200) {
+     alert ("Item returned")
+ 
+     setBorrowedItems(data);
 
     } else {
       console.error("Failed to return item");
@@ -61,15 +55,12 @@ const handleReturnItem = async (itemId) => {
   }
 };
 
-
-
-
 return (
 
 <div>
-<h2 className = "mb-3"> Your Borrowed Items</h2>
+  <h2 className = "mb-3">Your Borrowed Items</h2>
 
-<ul className="list-group">
+  <ul className="list-group">
         {borrowedItems && borrowedItems.data && borrowedItems.data.length > 0 ? (
             borrowedItems.data.map((item) => (
             <li className="list-group-item d-flex justify-content-between align-items-center" key={item.id}>
@@ -81,11 +72,7 @@ return (
         ) : (
           <p>Items returned.</p>
         )}
-      </ul>
-
-
+  </ul>
 </div>
-
 )
-
 }

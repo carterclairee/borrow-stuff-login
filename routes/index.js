@@ -130,13 +130,16 @@ router.post("/", userShouldBeLoggedIn, async (req, res) => {
 });
 
 //put to return an item
-router.put("/return/:id", async (req, res) => {
+router.put("/return/:id", userShouldBeLoggedIn, async (req, res) => {
   const { id } = req.params; 
-  console.log("REQ.PARAMS", req.params);
+ 
   try{
-    await db (`UPDATE Items SET free = !free, borrowed_by = NULL WHERE id = ${id};`);
-    const items = await getAllItems();
-    res.send(items)
+    await db (`UPDATE Items SET free = !free, borrowed_by = NULL WHERE id = ${id} AND borrowed_by = ${req.user_id};`);
+
+    // Send list of updated borrowed items
+    const items = await db(`SELECT i.*, p.first_name, p.last_name FROM Items AS i LEFT JOIN people AS p ON p.id = i.belongs_to WHERE free = false AND borrowed_by = ${req.user_id};`);
+
+    res.status(200).send(items)
   }
   catch (error) {
   res.status(500).send({ error: error.message });
