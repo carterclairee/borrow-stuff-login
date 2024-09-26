@@ -76,7 +76,7 @@ return (
     </div>
   </form>
 
-  <h5 className="mt-4">My items</h5>
+  <h3 className="mt-4">My items</h3>
   {/* Only show item list if the user has any */}
   {/* Need the myItems[0] otherwise the page will simply crash if user isn't logged in */}
   {myItems[0] && myItems[0].item_id === null ? (

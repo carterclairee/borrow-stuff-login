@@ -44,7 +44,7 @@ const handleReturnItem = async (itemId) => {
     
     if (status === 200) {
      alert ("Item returned")
- 
+      console.log(data)
      setBorrowedItems(data);
 
     } else {
@@ -58,6 +58,10 @@ const handleReturnItem = async (itemId) => {
 return (
 
 <div>
+  {!localStorage.getItem("token") && (
+    <div className="text-center p-4 alert">Please log in to start borrowing and sharing.</div>
+  )}
+
   <h2 className = "mb-3">Your Borrowed Items</h2>
 
   <ul className="list-group">
@@ -70,7 +74,7 @@ return (
             </li>
           ))
         ) : (
-          <p>Items returned.</p>
+          <p>All items returned.</p>
         )}
   </ul>
 </div>
