@@ -164,7 +164,7 @@ router.put("/:itemId", userShouldBeLoggedIn, async (req, res) => {
   console.log(req.user_id);
 
   try {
-    // if (!req.user.id) {
+    // if (!req.user_id) {
     //   return res.status(404).send({ error: "Person not found" });
     // }
     // Update the item to set it as borrowed by the user and mark it as not free
@@ -181,12 +181,14 @@ router.put("/:itemId", userShouldBeLoggedIn, async (req, res) => {
 });
 
 // delete item via ID
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
+router.delete("/:id", userShouldBeLoggedIn, async (req, res) => {
+  const { id } = req.params; 
   try {
     await db(`DELETE FROM Items WHERE id = ${id};`);
-    const items = await getAllItems();
-    res.send(items);
+    const results = await db(
+      `SELECT p.first_name, p.last_name, i.id AS item_id, i.item, i.free, i.borrowed_by FROM people As p LEFT JOIN items AS i ON p.id = i.belongs_to WHERE p.id = ${req.user_id};`
+    );
+    res.send(results.data);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }

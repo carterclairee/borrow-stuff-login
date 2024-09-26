@@ -4,7 +4,6 @@ import axios from "axios";
 export default function Ireturn(){
 
 const [borrowedItems, setBorrowedItems] = useState ([])
-const [error, setError] = useState(null);
 
 useEffect (() => {
 
@@ -44,7 +43,6 @@ const handleReturnItem = async (itemId) => {
     
     if (status === 200) {
      alert ("Item returned")
-      console.log(data)
      setBorrowedItems(data);
 
     } else {

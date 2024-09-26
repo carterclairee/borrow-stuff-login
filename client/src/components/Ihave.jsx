@@ -49,6 +49,21 @@ const getMyItems = async () => {
   }
 };
 
+const deleteItem = async (itemId) => {
+  try {
+    const { data } = await axios (`/api/index/${itemId}`, {
+      method: "DELETE",
+      headers: {
+        authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      data: {item_id: itemId}
+    });
+    setMyItems(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 return (
 <>
   {!localStorage.getItem("token") && (
@@ -84,8 +99,17 @@ return (
   ) : (
     <ul className="list-group">
     {myItems.map((i) => (
-      <li className="list-group-item" key={i.item_id}>
-        {i.item}
+      <li className="list-group-item d-flex" key={i.item_id}>
+        <div>
+          {i.item}
+        </div>
+        <div className="m-auto me-2">
+        <i
+          onClick={() => deleteItem(i.item_id)}
+          role="button"
+          className="fa-regular fa-trash-can"
+          ></i>
+        </div>
       </li>
     ))}
   </ul>
