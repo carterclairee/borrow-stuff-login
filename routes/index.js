@@ -49,80 +49,24 @@ router.get("/borrowableItems", userShouldBeLoggedIn, async (req, res) => {
   }
 })
 
+// Search for items by item name
+router.get("/borrowableItems/:item", userShouldBeLoggedIn, async (req, res) => {
+  const { item } = req.params;
 
-// // get item by id 
-// router.get("/:id", async (req, res) => {
-//   console.log("REQ.PARAMS", req.params);
-//   const { id } = req.params; 
-//   try {
-//     const results = await db(`SELECT * FROM Items WHERE id = ${id};`);
+  try {
+    const query = `SELECT Items.* , People.id AS PeopleId, PeopleBorrow.id AS PeopleBorrowId, People.first_name AS first_name_belong, People.last_name AS last_name_belong, PeopleBorrow.first_name AS borrowed_by_first_name, PeopleBorrow.last_name AS borrowed_by_last_name from Items LEFT JOIN People ON Items.belongs_to = People.id LEFT JOIN People AS PeopleBorrow ON Items.borrowed_by = PeopleBorrow.id WHERE Items.item = '${item}'`;
+    
+    const results = await db(mysql.format(query, [ item ]));
 
-//     if (results.data.length === 0) {
-//       return res.status(404).send({ message: " not found" });
-//     }
+    if (results.data.length === 0) {
+      return res.status(404).send({ message: "Items not found" });
+    }
 
-//     res.send(results.data[0]); 
-//   } catch (error) {
-//     res.status(500).send({ error: error.message });
-//   }
-// });
-
-// //get item by search count
-// router.get("/search/:item", async (req, res) => {
-//   console.log("REQ.PARAMS", req.params);
-//   const {item } = req.params;
-//   try{
-//       const query = `SELECT COUNT (*) as count FROM Items WHERE item = '${item}'`;
-//       // Sanitized to thwart sql injection attacks
-//       const results = await db(mysql.format(query, [item]));
-
-//       if (results.data.length === 0 || results.data[0].count === 0) {
-//         return res.status(200).send({ count: 0, message: "Item not found" });     
-//           }
-
-//           res.send({ count: results.data[0].count, message: "Item found" });
-//         } catch (error) {
-//           res.status(500).send({ error: error.message });
-//         }
-// });
-
-//get item by search details 
-
-// // Claire's note: This one aggregates items if someone has more than one.
-// router.get("/details/:item", async (req, res) => {
-//   const { item } = req.params;
-
-//   try {
-//     const query = `SELECT People.id, People.first_name, People.last_name, People.floor, People.email, COUNT(Items.id) as itemCount, '${item}' as item FROM Items LEFT JOIN People ON Items.belongs_to = People.id WHERE item = '${item}' GROUP BY People.id`;
-//     const results = await db(mysql.format(query, [item]));
-
-//     if (results.data.length === 0) {
-//       return res.status(404).send({ message: "Item not found" });
-//     }
-
-//     res.send(results.data);
-//   } catch (error) {
-//     res.status(500).send({ error: error.message });
-//   }
-// });
-
-// // Get information about owner and borrower of items
-// router.get("/borrowableItems/:item", async (req, res) => {
-//   const { item } = req.params;
-
-//   try {
-//     const query = `SELECT Items.* , People.id AS PeopleId, PeopleBorrow.id AS PeopleBorrowId, People.first_name AS first_name_belong, People.last_name AS last_name_belong, PeopleBorrow.first_name AS borrowed_by_first_name, PeopleBorrow.last_name AS borrowed_by_last_name from Items LEFT JOIN People ON Items.belongs_to = People.id LEFT JOIN People AS PeopleBorrow ON Items.borrowed_by = PeopleBorrow.id WHERE Items.item = '${item}'`;
-//     const results = await db(mysql.format(query, [ item ]));
-
-//     if (results.data.length === 0) {
-//       return res.status(404).send({ message: "Items not found" });
-//     }
-
-//     res.send(results.data);
-//   } catch (error) {
-//     res.status(500).send({ error: error.message });
-//   }
-// });
+    res.status(200).send(results.data);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
 
 //post a new item
 //INSERT INTO Items (item, free, belongs_to, borrowed_by) VALUES ('camera', true, 1, NULL);
