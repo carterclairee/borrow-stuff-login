@@ -86,8 +86,8 @@ return (
       <label htmlFor="floatingInput">Enter item</label>
     </div>
 
-    <div style={{ marginTop: "10px" }}>
-      <button type= "submit">Submit</button>
+    <div>
+      <button className="btn btn-dark" type="submit">Submit</button>
     </div>
   </form>
 
