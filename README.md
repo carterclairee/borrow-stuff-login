@@ -16,8 +16,9 @@ Borrow Stuff is a full stack app that helps housemates share items. The most cos
 
 ## Features
 - User authentication
-- Keep track of own items available to lend
+- Add and keep track of own items available to lend
 - See items available to borrow from other community members
+- Search items to borrow
 - Track who has borrowed what item for easier return process
 
 ## Technologies Used
@@ -90,18 +91,19 @@ Emelie Gustafsson developed the idea for the app and its borrowing functionality
 - Styling with Bootstrap
 
 ## Screenshots
+### Login
+![Login page view](/readmeassets/Login-Page.png "Login")
 ### Home Page
-![Home Page view](/readmeassets/Home-Page.png "Home Page")
-### Fridge
-![Fridge view](/readmeassets/Fridge.png "Fridge")
-### Add an Ingredient
-![Add an Ingredient view](/readmeassets/Add-Ingredient.png "Add Ingredient")
-### Recipe Gallery
-![Recipe Gallery view](/readmeassets/Recipe-Gallery.png "Recipe Gallery")
-### Recipe Page
-![Recipe Page view](/readmeassets/Recipe-Page.png "Recipe Page")
+![Home page view](/readmeassets/Home-Page.png "Home Page")
+### My Items
+![I have view](/readmeassets/I-Have.png "I have")
+### Items to Borrow
+![I need view](/readmeassets/I-Need.png "I need")
+### Return Items
+![I return view](/readmeassets/I-Return.png "I return")
 
 ## Future Features
 - Reminders users to return items
 - Date borrowed display
+- Forgot password feature
 - Feature to put a request out to community for an item not already in the database
