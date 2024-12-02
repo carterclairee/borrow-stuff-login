@@ -2,7 +2,7 @@
 A full stack app to help community members share and keep track of items, now with a login feature. 
 
 ## See Use Your Stash in Action
-[Watch the video on Loom]()
+[Watch the video on Loom](https://www.loom.com/share/22c53f4a6db24bb9b0f3cbe839915fdf?sid=a49bea5b-c76f-4e72-9ced-ea1c61400655)
 
 ## Table of Contents
 
