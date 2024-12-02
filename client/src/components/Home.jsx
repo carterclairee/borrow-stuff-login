@@ -73,7 +73,7 @@ export default function Home(){
 
         {profileInfo && (
           <div>
-            <h2>Hello, {profileInfo[0].first_name}! We live here! </h2>
+            <h2>Hello! We live here! </h2>
 
             <div className="m-3">
               <button onClick={handleDeleteUser}>I'm moving out</button>
