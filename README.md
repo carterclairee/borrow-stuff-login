@@ -1,6 +1,9 @@
 # Borrow Stuff
 A full stack app to help community members share and keep track of items, now with a login feature. 
 
+## See Use Your Stash in Action
+[Watch the video on Loom]()
+
 ## Table of Contents
 
 1. [Overview](#overview)
